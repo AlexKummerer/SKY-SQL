@@ -17,7 +17,7 @@ def delayed_flights_by_airline(data_manager):
     print_results(results)
 
 
-def delayed_flights_by_airport(data_manager):
+def delayed_flights_by_airport(data_manager: data.FlightData):
     """
     Asks the user for a textual IATA 3-letter airport code (loops until input is valid).
     Then runs the query using the data object method "get_delayed_flights_by_airport".
@@ -33,7 +33,7 @@ def delayed_flights_by_airport(data_manager):
     print_results(results)
 
 
-def flight_by_id(data_manager):
+def flight_by_id(data_manager : data.FlightData):
     """
     Asks the user for a numeric flight ID,
     Then runs the query using the data object method "get_flight_by_id".
@@ -51,7 +51,7 @@ def flight_by_id(data_manager):
     print_results(results)
 
 
-def flights_by_date(data_manager):
+def flights_by_date(data_manager: data.FlightData):
     """
     Asks the user for date input (and loops until it's valid),
     Then runs the query using the data object method "get_flights_by_date".
