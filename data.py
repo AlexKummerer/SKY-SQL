@@ -39,16 +39,44 @@ class FlightData:
         params = {"flight_id": flight_id}
         return self._execute_query(QUERY_FLIGHT_BY_ID, params)
 
-    def get_delayed_flights(self):
+    def get_flights_by_date(self, day, month, year):
         """
-        Retrieves flights delayed by 20 minutes or more.
+        Retrieves flights for a given date.
         """
         query = """
-        SELECT id, year, month, day, origin_airport, destination_airport, departure_delay
-        FROM flights
-        WHERE departure_delay >= 20
+        SELECT f.id, f.year, f.month, f.day, f.origin_airport, f.destination_airport, f.departure_delay AS DELAY, a.airline
+        FROM flights f
+        JOIN airlines a ON f.airline = a.id
+        WHERE f.day = :day AND f.month = :month AND f.year = :year
         """
-        return self._execute_query(query)
+        params = {"day": day, "month": month, "year": year}
+        return self._execute_query(query, params)
+
+    def get_delayed_flights_by_airport(self, airport):
+        """
+        Retrieves delayed flights for a given airport.
+        """
+        query = """
+        SELECT f.id, f.year, f.month, f.day, f.origin_airport, f.destination_airport, f.departure_delay AS DELAY, a.airline
+        FROM flights f
+        JOIN airlines a ON f.airline = a.id
+        WHERE f.origin_airport = :airport AND f.departure_delay > 0
+        """
+        params = {"airport": airport}
+        return self._execute_query(query, params)
+
+    def get_delayed_flights_by_airline(self, airline):
+        """
+        Retrieves delayed flights for a given airline.
+        """
+        query = """
+        SELECT f.id, f.year, f.month, f.day, f.origin_airport, f.destination_airport, f.departure_delay AS DELAY, a.airline
+        FROM flights f
+        JOIN airlines a ON f.airline = a.id
+        WHERE a.airline = :airline AND f.departure_delay > 0
+        """
+        params = {"airline": airline}
+        return self._execute_query(query, params)
 
     def __del__(self):
         """
