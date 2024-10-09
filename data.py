@@ -78,6 +78,44 @@ class FlightData:
         params = {"airline": airline}
         return self._execute_query(query, params)
 
+    def get_delayed_flights_percentage_by_airline(self):
+        """
+        Retrieves the percentage of delayed flights for each airline.
+        :return: A list of dictionaries with airline names and percentage of delayed flights.
+        """
+        query = """
+        SELECT a.airline, 
+               COUNT(f.id) AS total_flights, 
+               SUM(CASE WHEN f.departure_delay > 0 THEN 1 ELSE 0 END) AS delayed_flights
+        FROM flights f
+        JOIN airlines a ON f.airline = a.id
+        GROUP BY a.airline
+        """
+
+        results = self._execute_query(query)
+
+        return results
+
+    def get_delayed_flights_percentage_by_hour(self):
+        """
+        Retrieves the percentage of delayed flights for each hour of the day.
+        :return: A list of tuples (hour, total_flights, delayed_flights)
+        """
+        query = """
+        SELECT SUBSTR(f.departure_time, 1, 2) AS hour_of_day,
+               COUNT(f.id) AS total_flights,
+               SUM(CASE WHEN f.departure_delay > 0 THEN 1 ELSE 0 END) AS delayed_flights
+        FROM flights f
+        WHERE f.departure_time IS NOT NULL  -- Filter out NULL departure_time
+        GROUP BY hour_of_day
+        ORDER BY hour_of_day
+        """
+
+        # Execute the query and return the raw results as tuples
+        results = self._execute_query(query)
+        print(results)
+        return results  # Return the list of tuples
+
     def __del__(self):
         """
         Closes the connection to the databse when the object is about to be destroyed
